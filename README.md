@@ -1,11 +1,11 @@
 # CCTV Backup
 
 [![Build and test](https://github.com/irlanfazryana23/cctv-backup/actions/workflows/ci.yml/badge.svg)](https://github.com/irlanfazryana23/cctv-backup/actions/workflows/ci.yml)
-[![Latest release](https://img.shields.io/github/v/release/irlanfazryana23/cctv-backup?display_name=tag)](https://github.com/irlanfazryana23/cctv-backup/releases)
+[![Version](https://img.shields.io/github/v/tag/irlanfazryana23/cctv-backup?label=version)](https://github.com/irlanfazryana23/cctv-backup/tags)
 [![License](https://img.shields.io/github/license/irlanfazryana23/cctv-backup)](LICENSE)
 
 <p align="center">
-  <img src="cctv-logo.png" alt="CCTV Backup logo" width="180">
+  <img src="cctv-logo.png" alt="CCTV Backup logo" width="120">
 </p>
 
 A Windows desktop tool for backing up recordings from Sanec / Xiongmai branch DVRs
