@@ -1,6 +1,5 @@
 # CCTV Backup
 
-[![Build and test](https://github.com/irlanfazryana23/cctv-backup/actions/workflows/ci.yml/badge.svg)](https://github.com/irlanfazryana23/cctv-backup/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/github/v/tag/irlanfazryana23/cctv-backup?label=version)](https://github.com/irlanfazryana23/cctv-backup/tags)
 [![License](https://img.shields.io/github/license/irlanfazryana23/cctv-backup)](LICENSE)
 
