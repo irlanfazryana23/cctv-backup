@@ -15,7 +15,7 @@ vendor/**/*.dll
 vendor/**/*.pdb
 
 # Never commit vendor binaries, CMS data or credentials
-sdk/
+/sdk/
 **/Data.xml
 **/ConfigModule.ini
 **/User.ini
