@@ -1,0 +1,25 @@
+bin/
+obj/
+.vs/
+dist/
+*.user
+
+# Local build/package caches and reports
+tools/.cache/
+tools/_*.txt
+tools/sdk-inspect/_*.txt
+
+# Vendor SDK and decoder binaries must be supplied locally.
+*.exe
+vendor/**/*.dll
+vendor/**/*.pdb
+
+# Never commit vendor binaries, CMS data or credentials
+sdk/
+**/Data.xml
+**/ConfigModule.ini
+**/User.ini
+branches.json
+settings.json
+_out.txt
+_pdb.txt

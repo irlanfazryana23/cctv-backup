@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D0389D87-1D0F-4913-AC55-4F633519CC70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CctvBackup.Core", "src\CctvBackup.Core\CctvBackup.Core.csproj", "{557A4A27-20C1-4D0E-B49A-D60896A4E4F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CctvBackup.Spike", "src\CctvBackup.Spike\CctvBackup.Spike.csproj", "{601AFDF1-B602-4D9F-9A8D-F651A38B89E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CctvBackup.App", "src\CctvBackup.App\CctvBackup.App.csproj", "{C310A1D7-4A19-45E6-9539-BBCE8E943E84}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E1B309F7-CBF3-4AFD-8B83-4FA86CBAF355}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CctvBackup.Tests", "tests\CctvBackup.Tests\CctvBackup.Tests.csproj", "{A14CF107-A3D9-43A1-B58C-5F90520884CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{557A4A27-20C1-4D0E-B49A-D60896A4E4F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{557A4A27-20C1-4D0E-B49A-D60896A4E4F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{557A4A27-20C1-4D0E-B49A-D60896A4E4F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{557A4A27-20C1-4D0E-B49A-D60896A4E4F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{601AFDF1-B602-4D9F-9A8D-F651A38B89E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{601AFDF1-B602-4D9F-9A8D-F651A38B89E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{601AFDF1-B602-4D9F-9A8D-F651A38B89E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{601AFDF1-B602-4D9F-9A8D-F651A38B89E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C310A1D7-4A19-45E6-9539-BBCE8E943E84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C310A1D7-4A19-45E6-9539-BBCE8E943E84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C310A1D7-4A19-45E6-9539-BBCE8E943E84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C310A1D7-4A19-45E6-9539-BBCE8E943E84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A14CF107-A3D9-43A1-B58C-5F90520884CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A14CF107-A3D9-43A1-B58C-5F90520884CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A14CF107-A3D9-43A1-B58C-5F90520884CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A14CF107-A3D9-43A1-B58C-5F90520884CB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{557A4A27-20C1-4D0E-B49A-D60896A4E4F8} = {D0389D87-1D0F-4913-AC55-4F633519CC70}
+		{601AFDF1-B602-4D9F-9A8D-F651A38B89E6} = {D0389D87-1D0F-4913-AC55-4F633519CC70}
+		{C310A1D7-4A19-45E6-9539-BBCE8E943E84} = {D0389D87-1D0F-4913-AC55-4F633519CC70}
+		{A14CF107-A3D9-43A1-B58C-5F90520884CB} = {E1B309F7-CBF3-4AFD-8B83-4FA86CBAF355}
+	EndGlobalSection
+EndGlobal

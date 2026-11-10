@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\CctvBackup.Core\CctvBackup.Core.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- The vendor SDK (NetSdk.dll) is 32-bit, so this process must be x86.
+         Self-contained so no x86 .NET runtime has to be installed. -->
+    <PlatformTarget>x86</PlatformTarget>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+
+    <!-- What Windows shows for the program: file name, icon, and "Details" in the file properties. -->
+    <AssemblyName>CctvBackup</AssemblyName>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <Product>CCTV Backup</Product>
+    <AssemblyTitle>CCTV Backup</AssemblyTitle>
+    <Description>Back up recordings from branch DVRs to an external disk</Description>
+    <!-- The program has its own English / Indonesian text, so the ~100 translated folders of the .NET libraries are dead weight. -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+</Project>

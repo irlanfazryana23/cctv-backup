@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\CctvBackup.Core\CctvBackup.Core.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- The vendor SDK (NetSdk.dll) is 32-bit, so this process must be x86.
+         Self-contained so no x86 .NET runtime has to be installed. -->
+    <PlatformTarget>x86</PlatformTarget>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+</Project>
