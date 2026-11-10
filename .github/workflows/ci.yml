@@ -1,0 +1,32 @@
+name: Build and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore CctvBackup.sln
+
+      - name: Build
+        run: dotnet build CctvBackup.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test tests\CctvBackup.Tests\CctvBackup.Tests.csproj --configuration Release --no-build --verbosity normal

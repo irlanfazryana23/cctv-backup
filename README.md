@@ -1,30 +1,108 @@
 # CCTV Backup
 
-One program to back up recordings from the branch DVRs (Sanec / Xiongmai) to an external disk.
-Add your branches once, then: tick branches, choose the period, press **Find recordings**, tick the files you want, press **Download selected**.
-The program is in **English and Bahasa Indonesia**.
+[![Build and test](https://github.com/irlanfazryana23/cctv-backup/actions/workflows/ci.yml/badge.svg)](https://github.com/irlanfazryana23/cctv-backup/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/irlanfazryana23/cctv-backup?display_name=tag)](https://github.com/irlanfazryana23/cctv-backup/releases)
+[![License](https://img.shields.io/github/license/irlanfazryana23/cctv-backup)](LICENSE)
 
-## Development
+![CCTV Backup logo](cctv-logo.png)
+
+A Windows desktop tool for backing up recordings from Sanec / Xiongmai branch DVRs
+to an external disk. Review recordings before downloading, continue interrupted
+backups safely, and play saved `.h264` files without installing another player.
+
+**1.0.0 — Initial release · Windows 10/11 · .NET 8 · x86**
+
+## What it does
+
+- Connects to DVRs through Cloud (Serial ID) or a local IP/domain.
+- Imports branch information from a compatible CMS installation.
+- Searches recordings by branch, camera and DVR-local date/time.
+- Shows file size, progress, speed and estimated time remaining.
+- Resumes interrupted backups without downloading completed files again.
+- Writes a manifest for each branch so saved recordings can be verified.
+- Includes an H.264 player with snapshots, seeking and full-screen playback.
+- Provides English and Bahasa Indonesia interfaces.
+
+## Get started
+
+Download the installer from the [Releases page](https://github.com/irlanfazryana23/cctv-backup/releases), or [build it from source](#build-from-source).
+
+1. Run `CCTV-Backup-Setup-1.0.0.exe`.
+2. Choose English or Bahasa Indonesia.
+3. Add a branch, test the connection, and choose an external NTFS or exFAT disk.
+4. Select the period and cameras, then choose **Find recordings**.
+5. Review the files and select **Download selected**.
+
+The installer is currently unsigned, so Windows may show an unknown-publisher
+warning. The application does not require administrator permission after install.
+
+## Requirements
+
+- Windows 10 or Windows 11, 32-bit process support.
+- Internet access for Cloud DVR connections.
+- An external disk formatted as NTFS or exFAT. FAT32 cannot store files larger than 4 GB.
+- DVR credentials and either a Serial ID or reachable IP/domain and media port.
+
+The CMS is optional. It can provide branch details during import, but the
+application can be configured manually.
+
+## Safety and privacy
+
+Passwords are encrypted with Windows DPAPI for the current Windows user and
+stored in `%APPDATA%\CctvBackup\credentials.dat`. Branches and preferences are
+stored locally. The application has no telemetry, analytics, startup service or
+automatic cleanup.
+
+Recordings remain in their original `.h264` format. A backup never deletes
+recordings from the DVR. Cancelled or failed partial files are removed, and
+completed files are detected on the next search.
+
+## Build from source
 
 This is a .NET 8 Windows Forms application. Open `CctvBackup.sln` in Visual Studio 2022
 or build it from a Developer PowerShell:
 
 ```powershell
-dotnet build CctvBackup.sln
-dotnet test tests\CctvBackup.Tests\CctvBackup.Tests.csproj
-```
-
-To create a distributable build, run:
-
-```powershell
-powershell -File tools\publish.ps1 -CmsFolder "C:\Program Files (x86)\CMS"
-powershell -File tools\build-installer.ps1 -SkipPublish
+dotnet build CctvBackup.sln --configuration Release
+dotnet test tests\CctvBackup.Tests\CctvBackup.Tests.csproj --configuration Release
 ```
 
 The DVR SDK and video decoder are proprietary vendor files. They are intentionally not
 stored in this repository. `publish.ps1` copies the SDK from a local CMS installation
 and expects decoder files in `vendor\decoder`; obtain and use those files only under
 the applicable vendor license.
+
+The ordinary build and tests do not require the vendor SDK:
+
+```powershell
+powershell -File tools\publish.ps1 -CmsFolder "C:\Program Files (x86)\CMS"
+powershell -File tools\build-installer.ps1 -SkipPublish
+```
+
+Generated files are written to `dist\` and excluded from Git.
+
+## Project layout
+
+| Location | Purpose |
+| --- | --- |
+| `src\CctvBackup.App\` | Windows Forms application and player |
+| `src\CctvBackup.Core\` | Backup engine, DVR clients, settings and localization |
+| `tests\CctvBackup.Tests\` | Unit and workflow tests |
+| `installer\` | Inno Setup installer definition and translations |
+| `tools\` | Publishing, packaging and SDK inspection scripts |
+| `vendor\decoder\` | Local-only proprietary decoder input |
+
+## Contributing
+
+Bug reports and pull requests are welcome. Before opening an issue, remove
+passwords, serial IDs, IP addresses, usernames and local file paths from logs or
+screenshots. See [CONTRIBUTING.md](CONTRIBUTING.md) for the development checklist.
+
+## License
+
+The original project code is available under the [MIT License](LICENSE).
+Vendor SDK and decoder binaries are not included and remain subject to their
+respective vendor licenses.
 
 ## Install
 1. Run `CCTV-Backup-Setup-1.0.0.exe`. Choose the setup language (English or Bahasa Indonesia).
@@ -34,10 +112,6 @@ the applicable vendor license.
 
 To remove it: Windows **Settings > Apps > CCTV Backup > Uninstall**. The uninstaller asks whether to also delete the saved branches, logins and logs;
 answer **No** to keep them for a later re-install.
-
-## What it needs
-- A Windows PC and internet access. **The CMS is not required**; the installer includes the DVR driver files.
-- An external disk formatted **NTFS or exFAT** (FAT32 cannot hold files of 4 GB or more).
 
 ## Language
 Use the **Language / Bahasa** box at the top right to switch between English and Bahasa Indonesia. It changes at once and is remembered.
