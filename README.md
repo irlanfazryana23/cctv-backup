@@ -4,7 +4,9 @@
 [![Latest release](https://img.shields.io/github/v/release/irlanfazryana23/cctv-backup?display_name=tag)](https://github.com/irlanfazryana23/cctv-backup/releases)
 [![License](https://img.shields.io/github/license/irlanfazryana23/cctv-backup)](LICENSE)
 
-![CCTV Backup logo](cctv-logo.png)
+<p align="center">
+  <img src="cctv-logo.png" alt="CCTV Backup logo" width="180">
+</p>
 
 A Windows desktop tool for backing up recordings from Sanec / Xiongmai branch DVRs
 to an external disk. Review recordings before downloading, continue interrupted
@@ -198,23 +200,3 @@ The program has its own video player, so the `.h264` files can be watched withou
 | Not enough free space / FAT32 | Free up the disk or use an NTFS/exFAT disk. |
 
 Logs: `%APPDATA%\CctvBackup\logs\` (one file per day, kept 30 days). Logs never contain passwords.
-
-## For developers
-- `src/CctvBackup.Core` logic and SDK wrapper, `src/CctvBackup.App` WinForms UI (builds `CctvBackup.exe`), `src/CctvBackup.Spike` command-line test tool,
-  `tests/CctvBackup.Tests` unit tests (`dotnet test`), `installer/` the Inno Setup script.
-- **Installer:** `powershell -File tools\build-installer.ps1` publishes the program, downloads the Inno Setup compiler once (into `tools\.cache`,
-  nothing is installed on the PC) and writes `dist\installer\CCTV-Backup-Setup-<version>.exe`. The version comes from `<Version>` in `CctvBackup.App.csproj`.
-  `tools\publish.ps1` alone builds just the program folder `dist\CctvBackup`. The program is x86 and self-contained because the vendor driver is 32-bit;
-  the four driver files are copied from a CMS install into its `sdk` folder. Those files belong to the vendor: keep the installer inside your company.
-- **Icon:** `tools\make-icon.ps1` turns `cctv-logo.png` into `src\CctvBackup.App\Assets\app.ico` (white background removed, margin cropped, sizes 16-256).
-  Run it again if the logo changes, then rebuild.
-- **Translations:** every text shown to the user goes through `Loc.T("English text")` or `Loc.F("... {0}", value)`; the English text is the key. Add the
-  Indonesian version to `src/CctvBackup.Core/Localization/IndonesianStrings.cs`. A unit test fails if a text has no translation, if a translation is left
-  over, or if the `{0}` placeholders or `&` shortcut keys differ.
-- The built-in player (`PlayerForm`) draws with the vendor decoder `H264Play.dll` through `PlaySdk` (argument sizes read from the DLL, behaviour checked on real recordings). The decoder and its 7 helper DLLs (about 21 MB) are kept in `vendor\decoder` and copied to `decoder` next to the program by `tools\publish.ps1`; `DecoderLocator` finds them. No vendor program, login settings or registry entries are involved. Recordings must have a plain (ASCII) path or an 8.3 short name, because the decoder only takes ANSI paths.
-- `Program.Main` treats a file path argument as "player only" (`RunPlayerOnly`). `installer\CctvBackup.iss` registers `.h264` (`CctvBackup.Recording`, plus an `Applications\CctvBackup.exe` entry) under HKA, and its `ClearDeadH264Choice` removes a `UserChoice` only when its command points to a file that no longer exists.
-- The driver is looked for in this order: the `sdk` folder next to the program, `SdkDirectory` in `settings.json`, the CMS folder.
-- `CmsBranchImporter` reads the CMS `Data.xml` (never the passwords) and `CmsImportPlanner` sorts the result against the existing branches; `ImportCmsDialog` shows it. Login type `ip="3"` is Cloud (checked on real data); `0` and `1` are treated as IP/Domain (inferred from the CMS Login Type box order, not checked against a real IP-type CMS entry).
-- `tools/sdk-inspect` holds the scripts used to read the SDK's function list and struct layouts from the CMS files.
-- `CctvBackup.Spike.exe selftest` checks that the driver loads; `probe`, `files` and `get` test a branch from the command line
-  (these three still read the branch list from the CMS).
