@@ -58,7 +58,7 @@ public sealed class BackupEngine
 
         var credential = _credentialFor(branch.Name);
         if (credential is null)
-            return PlanError(branch, Loc.T("No password saved for this branch. Select it, press Edit branch... and enter it."));
+            return PlanError(branch, Loc.T("No password saved for this branch. Select it, press Edit and enter it."));
 
         IDvrConnection conn;
         try
@@ -209,7 +209,7 @@ public sealed class BackupEngine
 
         var credential = _credentialFor(branch.Name);
         if (credential is null)
-            return FailAll(branch, todo, alreadySaved, Loc.T("No password saved for this branch. Select it, press Edit branch... and enter it."));
+            return FailAll(branch, todo, alreadySaved, Loc.T("No password saved for this branch. Select it, press Edit and enter it."));
 
         IDvrConnection? conn;
         try

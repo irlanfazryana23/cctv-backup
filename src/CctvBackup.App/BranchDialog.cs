@@ -18,21 +18,22 @@ internal sealed class BranchDialog : Form
     private readonly Branch? _existing;
     private readonly Credential? _saved;
 
-    private readonly TextBox _name = new() { Dock = DockStyle.Fill, AccessibleName = Loc.T("Branch name") };
-    private readonly RadioButton _modeCloud = new() { Text = Loc.T("&Cloud (Serial ID)"), AutoSize = true, Checked = true, Margin = new Padding(0, 6, 18, 0) };
-    private readonly RadioButton _modeIp = new() { Text = Loc.T("&IP address"), AutoSize = true, Margin = new Padding(0, 6, 0, 0) };
-    private readonly TextBox _serial = new() { Dock = DockStyle.Fill, AccessibleName = Loc.T("Serial ID"), MaxLength = 40 };
-    private readonly TextBox _address = new() { Dock = DockStyle.Fill, AccessibleName = Loc.T("IP address or domain"), MaxLength = 253 };
-    private readonly NumericUpDown _port = new() { Minimum = 1, Maximum = 65535, Value = Branch.DefaultPort, Width = 90, AccessibleName = Loc.T("Port") };
-    private readonly TextBox _user = new() { Dock = DockStyle.Fill, AccessibleName = Loc.T("User name") };
-    private readonly TextBox _pass = new() { Dock = DockStyle.Fill, UseSystemPasswordChar = true, AccessibleName = Loc.T("Password") };
-    private readonly CheckBox _show = new() { Text = Loc.T("Show password"), AutoSize = true };
+    private readonly ModernTextBox _name = new() { Dock = DockStyle.Fill, AccessibleName = Loc.T("Branch name"), MaxLength = 60 };
+    private readonly RadioButton _modeCloud = new() { Text = Loc.T("&Cloud (Serial ID)"), AutoSize = true, Checked = true, Margin = new Padding(0, 8, 24, 0) };
+    private readonly RadioButton _modeIp = new() { Text = Loc.T("&IP address"), AutoSize = true, Margin = new Padding(0, 8, 0, 0) };
+    private readonly ModernTextBox _serial = new() { Dock = DockStyle.Fill, AccessibleName = Loc.T("Serial ID"), MaxLength = 40 };
+    private readonly ModernTextBox _address = new() { Dock = DockStyle.Fill, AccessibleName = Loc.T("IP address or domain"), MaxLength = 253 };
+    private readonly NumericUpDown _port = new() { Minimum = 1, Maximum = 65535, Value = Branch.DefaultPort, Width = 100, AccessibleName = Loc.T("Port"), Margin = new Padding(0, 6, 0, 0) };
+    private readonly ModernTextBox _user = new() { Dock = DockStyle.Fill, AccessibleName = Loc.T("User name") };
+    private readonly ModernTextBox _pass = new() { Dock = DockStyle.Fill, UseSystemPasswordChar = true, AccessibleName = Loc.T("Password") };
+    private readonly CheckBox _show = new() { Text = Loc.T("Show password"), AutoSize = true, ForeColor = Ui.Text };
     private readonly Label _status = new() { Dock = DockStyle.Fill, AutoSize = false, TextAlign = ContentAlignment.TopLeft };
-    private readonly Button _test = new() { Text = Loc.T("&Test connection"), AutoSize = true };
-    private readonly Button _save = new() { Text = Loc.T("&Save"), AutoSize = true, MinimumSize = new Size(90, 32) };
-    private readonly Button _cancel = new() { Text = Loc.T("Cancel"), AutoSize = true, MinimumSize = new Size(90, 32), DialogResult = DialogResult.Cancel };
+    private readonly ModernButton _test = new() { Text = Loc.T("&Test connection"), AutoSize = true, MinimumSize = new Size(140, 34), BorderRadius = 6 };
+    private readonly ModernButton _save = new() { Text = Loc.T("&Save"), AutoSize = true, MinimumSize = new Size(110, 36), BorderRadius = 6 };
+    private readonly ModernButton _cancel = new() { Text = Loc.T("Cancel"), AutoSize = true, MinimumSize = new Size(100, 36), BorderRadius = 6, DialogResult = DialogResult.Cancel };
     private CancellationTokenSource? _cts;
     private TableLayoutPanel _layout = null!;
+    private Panel _strip = null!;
 
     // Rows shown only for one login type: (row index, normal height, controls in that row).
     private readonly List<(int Row, int Height, Control[] Controls)> _cloudRows = new();
@@ -61,23 +62,41 @@ internal sealed class BranchDialog : Form
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = MinimizeBox = false;
         ShowInTaskbar = false;
-        ClientSize = new Size(500, 420);
-        Font = SystemFonts.MessageBoxFont ?? Font;
+        ClientSize = new Size(540, 500);
+        BackColor = Color.White;
+        Font = Ui.Font(9.5f);
         CancelButton = _cancel;
         AcceptButton = _save;
 
-        _layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(14) };
-        _layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 130));
+        Ui.StyleSecondary(_test);
+        Ui.StylePrimary(_save);
+        Ui.StyleSecondary(_cancel);
+        _cancel.Font = Ui.Font(9.5f);
+
+        // Title strip so the window looks like the rest of the program
+        var strip = new Panel { Dock = DockStyle.Top, Height = 52, BackColor = Ui.Surface };
+        strip.Paint += (_, e) =>
+        {
+            using var line = new Pen(Ui.Line, 1);
+            e.Graphics.DrawLine(line, 0, strip.Height - 1, strip.Width, strip.Height - 1);
+            TextRenderer.DrawText(e.Graphics, Text, Ui.Font(12f, FontStyle.Bold), new Point(Ui.S(strip, 20), Ui.S(strip, 13)), Ui.Ink);
+        };
+        Controls.Add(strip);
+        _strip = strip;
+
+        _layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(20, 12, 20, 12) };
+        _layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 140));
         _layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         Controls.Add(_layout);
+        _layout.BringToFront();
 
         // Every control gets an explicit cell: a table that places controls automatically skips hidden ones,
         // which would shift the rows below when a login type hides its fields.
-        (int Row, Label Label) Row(string label, Control c, int height = 32)
+        (int Row, Label Label) Row(string label, Control c, int height = 42)
         {
             _layout.RowStyles.Add(new RowStyle(SizeType.Absolute, height));
             int r = _layout.RowStyles.Count - 1;
-            var l = new Label { Text = label, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft, UseMnemonic = true };
+            var l = new Label { Text = label, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft, UseMnemonic = true, ForeColor = Ui.Text, Font = Ui.Font(9.5f, FontStyle.Bold) };
             _layout.Controls.Add(l, 0, r);
             _layout.Controls.Add(c, 1, r);
             return (r, l);
@@ -90,7 +109,7 @@ internal sealed class BranchDialog : Form
             _layout.SetColumnSpan(c, 2);
             return r;
         }
-        Label Hint(string text) => new() { Text = text, ForeColor = SystemColors.GrayText, Dock = DockStyle.Fill };
+        Label Hint(string text) => new() { Text = text, ForeColor = Ui.Muted, Font = Ui.Font(9f), Dock = DockStyle.Fill };
 
         Row(Loc.T("Branch &name"), _name);
 
@@ -103,7 +122,7 @@ internal sealed class BranchDialog : Form
         var serialRow = Row(Loc.T("&Serial ID"), _serial);
         var serialHint = Hint(Loc.T("The cloud ID shown in the DVR (the \"Serial ID\" in the CMS)."));
         var serialHintRow = Full(serialHint, 24);
-        _cloudRows.Add((serialRow.Row, 32, new Control[] { serialRow.Label, _serial }));
+        _cloudRows.Add((serialRow.Row, 42, new Control[] { serialRow.Label, _serial }));
         _cloudRows.Add((serialHintRow, 24, new Control[] { serialHint }));
 
         // --- IP ---
@@ -113,26 +132,27 @@ internal sealed class BranchDialog : Form
         var portRow = Row(Loc.T("&Port"), portPanel);
         var ipHint = Hint(Loc.T("The DVR's local address and Media Port (usually 34567). This PC must be able to reach it: same network, VPN or leased line."));
         var ipHintRow = Full(ipHint, 40);
-        _ipRows.Add((addrRow.Row, 32, new Control[] { addrRow.Label, _address }));
-        _ipRows.Add((portRow.Row, 32, new Control[] { portRow.Label, portPanel }));
+        _ipRows.Add((addrRow.Row, 42, new Control[] { addrRow.Label, _address }));
+        _ipRows.Add((portRow.Row, 42, new Control[] { portRow.Label, portPanel }));
         _ipRows.Add((ipHintRow, 40, new Control[] { ipHint }));
 
         Row(Loc.T("&User name"), _user);
         Row(Loc.T("&Password"), _pass);
 
-        _layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
+        _layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
         _layout.Controls.Add(_show, 1, _layout.RowStyles.Count - 1);
 
         var testRow = new FlowLayoutPanel { Dock = DockStyle.Fill };
         testRow.Controls.Add(_test);
-        Full(testRow, 40);
+        Full(testRow, 46);
 
-        Full(_status, 60);
+        Full(_status, 66);
 
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft };
-        buttons.Controls.Add(_cancel);
+        _save.Margin = new Padding(8, 3, 0, 3);
         buttons.Controls.Add(_save);
-        Full(buttons, 42);
+        buttons.Controls.Add(_cancel);
+        Full(buttons, 48);
 
         _layout.RowCount = _layout.RowStyles.Count;
 
@@ -165,6 +185,7 @@ internal sealed class BranchDialog : Form
             if (_busy) { e.Cancel = true; _cts?.Cancel(); }   // wait for the connection attempt to stop
         };
         Shown += (_, _) => _name.Focus();
+        Ui.EnableScaling(this);   // last: only controls that already exist get scaled
     }
 
     private LoginMode Mode => _modeIp.Checked ? LoginMode.Ip : LoginMode.Cloud;
@@ -184,6 +205,10 @@ internal sealed class BranchDialog : Form
         Show(_cloudRows, Mode == LoginMode.Cloud);
         Show(_ipRows, Mode == LoginMode.Ip);
         _layout.ResumeLayout();
+
+        // Fit the window to the rows that are showing, so there is no empty gap under the buttons.
+        float rows = _layout.RowStyles.Cast<RowStyle>().Sum(r => r.Height);
+        ClientSize = new Size(ClientSize.Width, (int)Math.Ceiling(_strip.Height + _layout.Padding.Vertical + rows));
     }
 
     private string Password => _pass.Text.Length > 0 ? _pass.Text : _saved?.Password ?? string.Empty;
@@ -316,6 +341,6 @@ internal sealed class BranchDialog : Form
     private void Say(string text, bool error = false)
     {
         _status.Text = text;
-        _status.ForeColor = error ? Color.Firebrick : SystemColors.ControlText;
+        _status.ForeColor = error ? Ui.Danger : Ui.Text;
     }
 }

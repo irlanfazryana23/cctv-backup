@@ -16,11 +16,11 @@ internal sealed class ImportCmsDialog : Form
         HideSelection = false, MultiSelect = false, AccessibleName = Loc.T("Branches found in the CMS"),
     };
     private readonly Label _count = new() { AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(12, 8, 3, 3) };
-    private readonly TextBox _password = new() { Dock = DockStyle.Fill, UseSystemPasswordChar = true, AccessibleName = Loc.T("Password for the imported branches (optional)") };
-    private readonly CheckBox _show = new() { Text = Loc.T("Show password"), AutoSize = true };
-    private readonly Button _import = new() { Text = Loc.T("&Import"), AutoSize = true, MinimumSize = new Size(100, 32) };
-    private readonly Button _cancel = new() { Text = Loc.T("Cancel"), AutoSize = true, MinimumSize = new Size(100, 32), DialogResult = DialogResult.Cancel };
-    private readonly Button _other = new() { Text = Loc.T("Choose another file..."), AutoSize = true, MinimumSize = new Size(100, 32) };
+    private readonly ModernTextBox _password = new() { Dock = DockStyle.Fill, UseSystemPasswordChar = true, AccessibleName = Loc.T("Password for the imported branches (optional)") };
+    private readonly CheckBox _show = new() { Text = Loc.T("Show password"), AutoSize = true, Anchor = AnchorStyles.Left };
+    private readonly ModernButton _import = new() { Text = Loc.T("&Import"), AutoSize = true, MinimumSize = new Size(110, 36), BorderRadius = 6, Margin = new Padding(8, 0, 0, 0) };
+    private readonly ModernButton _cancel = new() { Text = Loc.T("Cancel"), AutoSize = true, MinimumSize = new Size(100, 36), BorderRadius = 6, DialogResult = DialogResult.Cancel, Margin = new Padding(8, 0, 0, 0) };
+    private readonly ModernButton _other = new() { Text = Loc.T("Choose another file..."), AutoSize = true, MinimumSize = new Size(100, 36), BorderRadius = 6 };
     private bool _loading;
 
     /// <summary>The branches the user ticked (valid when the dialog returned OK).</summary>
@@ -38,13 +38,19 @@ internal sealed class ImportCmsDialog : Form
         FormBorderStyle = FormBorderStyle.Sizable;
         MinimizeBox = false;
         ShowInTaskbar = false;
-        ClientSize = new Size(820, 560);
-        MinimumSize = new Size(700, 480);
-        Font = SystemFonts.MessageBoxFont ?? Font;
+        ClientSize = new Size(840, 580);
+        MinimumSize = new Size(720, 500);
+        BackColor = Color.White;
+        Font = Ui.Font(9.5f);
         AcceptButton = _import;
         CancelButton = _cancel;
+        Ui.StylePrimary(_import);
+        Ui.StyleSecondary(_cancel);
+        Ui.StyleSecondary(_other);
+        _cancel.Font = Ui.Font(9.5f);
+        _other.Font = Ui.Font(9.5f);
 
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, Padding = new Padding(14) };
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, Padding = new Padding(20, 16, 20, 16) };
         Controls.Add(root);
         void AddRow(Control c, SizeType type = SizeType.AutoSize, float height = 0)
         {
@@ -52,7 +58,7 @@ internal sealed class ImportCmsDialog : Form
             root.Controls.Add(c, 0, root.RowStyles.Count - 1);
         }
 
-        AddRow(new Label { Text = Loc.F("New branches found in {0}:", path), AutoSize = true, MaximumSize = new Size(780, 0), Margin = new Padding(0, 0, 0, 6) });
+        AddRow(new Label { Text = Loc.F("New branches found in {0}:", path), AutoSize = true, MaximumSize = new Size(780, 0), Margin = new Padding(0, 0, 0, 8), Font = Ui.Font(9.5f, FontStyle.Bold), ForeColor = Ui.Ink, AutoEllipsis = true });
 
         _list.Columns.Add(Loc.T("Branch"), 180);
         _list.Columns.Add(Loc.T("Connection"), 230);
@@ -61,9 +67,13 @@ internal sealed class ImportCmsDialog : Form
         _list.Columns.Add(Loc.T("Note"), 190);
         AddRow(_list, SizeType.Percent, 100);
 
-        var pick = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, Margin = new Padding(0, 6, 0, 6) };
-        var all = new Button { Text = Loc.T("All"), AutoSize = true };
-        var none = new Button { Text = Loc.T("None"), AutoSize = true };
+        var pick = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, Margin = new Padding(0, 8, 0, 8) };
+        var all = new ModernButton { Text = Loc.T("All"), AutoSize = true, MinimumSize = new Size(80, 30), BorderRadius = 4 };
+        var none = new ModernButton { Text = Loc.T("None"), AutoSize = true, MinimumSize = new Size(90, 30), BorderRadius = 4 };
+        Ui.StyleSecondary(all);
+        Ui.StyleSecondary(none);
+        _count.Anchor = AnchorStyles.Left;
+        _count.ForeColor = Ui.Muted;
         all.Click += (_, _) => SetAll(true);
         none.Click += (_, _) => SetAll(false);
         pick.Controls.AddRange(new Control[] { all, none, _count });
@@ -75,7 +85,7 @@ internal sealed class ImportCmsDialog : Form
             AddRow(new TextBox
             {
                 Text = left, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, Dock = DockStyle.Fill,
-                Height = 70, BackColor = SystemColors.Control, AccessibleName = Loc.T("Branches that are not imported"),
+                Height = 70, BackColor = Ui.Surface, BorderStyle = BorderStyle.None, AccessibleName = Loc.T("Branches that are not imported"),
             });
         }
 
@@ -87,15 +97,15 @@ internal sealed class ImportCmsDialog : Form
         pwLayout.Controls.Add(_show, 1, 0);
         var hint = new Label
         {
-            Text = Loc.T("The CMS keeps its passwords in a form this program does not read. If these branches share one password, type it here; otherwise leave it empty and enter each one later with Edit branch..."),
-            ForeColor = SystemColors.GrayText, AutoSize = true, MaximumSize = new Size(760, 0), Margin = new Padding(0, 6, 0, 0),
+            Text = Loc.T("The CMS keeps its passwords in a form this program does not read. If these branches share one password, type it here; otherwise leave it empty and enter each one later with Edit."),
+            ForeColor = Ui.Muted, AutoSize = true, MaximumSize = new Size(760, 0), Margin = new Padding(0, 6, 0, 0),
         };
         pwLayout.Controls.Add(hint, 0, 1);
         pwLayout.SetColumnSpan(hint, 2);
         pw.Controls.Add(pwLayout);
         AddRow(pw);
 
-        var buttons = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 4, AutoSize = true, Margin = new Padding(0, 10, 0, 0) };
+        var buttons = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 4, AutoSize = true, Margin = new Padding(0, 12, 0, 0) };
         buttons.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         buttons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         buttons.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
@@ -129,6 +139,7 @@ internal sealed class ImportCmsDialog : Form
             Close();
         };
         _other.Click += (_, _) => { DialogResult = DialogResult.Retry; Close(); };
+        Ui.EnableScaling(this);   // last: only controls that already exist get scaled
     }
 
     private void SetAll(bool value)

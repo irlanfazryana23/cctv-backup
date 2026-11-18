@@ -112,7 +112,8 @@ public class LocalizationTests
     private static readonly Regex[] Patterns =
     {
         new(@"Loc\.[TF]\(\s*""((?:[^""\\]|\\.)*)""", RegexOptions.Compiled),                         // Loc.T("...") / Loc.F("...", ...)
-        new(@"Bind(?:Accessible)?\([^;]*?,\s*""((?:[^""\\]|\\.)*)""\)", RegexOptions.Compiled),        // Bind(control, "...")
+        new(@"Bind(?:Accessible|Title)?\([^;]*?,\s*""((?:[^""\\]|\\.)*)""\)", RegexOptions.Compiled),     // Bind(control, "...")
+        new(@"\bNewLink\(""((?:[^""\\]|\\.)*)""\)", RegexOptions.Compiled),                          // link labels: NewLink("...")
         new(@"\bCol\(""((?:[^""\\]|\\.)*)""", RegexOptions.Compiled),                                 // grid column headers
         new(@"\bGroup\(""((?:[^""\\]|\\.)*)""", RegexOptions.Compiled),                               // group box titles
         new(@"\bTip\([^;]*?,\s*""((?:[^""\\]|\\.)*)""\)", RegexOptions.Compiled),                       // tooltips: Tip(control, "...")
