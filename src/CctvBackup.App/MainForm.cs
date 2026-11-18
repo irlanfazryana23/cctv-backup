@@ -11,6 +11,7 @@ using CctvBackup.Core.Localization;
 using CctvBackup.Core.Playback;
 using CctvBackup.Core.Sdk;
 using CctvBackup.Core.Settings;
+using CctvBackup.Core.Updates;
 using CctvBackup.Core.Workflow;
 
 namespace CctvBackup.App;
@@ -54,6 +55,14 @@ internal sealed class MainForm : Form
     private readonly ModernButton _lockBtn = new() { AutoSize = true, MinimumSize = new Size(80, 32), BorderRadius = 6 };
     private readonly ModernButton _copyLogBtn = new() { AutoSize = true, MinimumSize = new Size(100, 32), BorderRadius = 6 };
     private readonly ComboBox _language = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 140, Font = new Font("Segoe UI", 9f), AccessibleName = "Language / Bahasa" };
+
+    // ---- Update Notification Banner ----
+    private readonly TableLayoutPanel _updateBanner = new() { Dock = DockStyle.Fill, AutoSize = true, ColumnCount = 4, RowCount = 1, Padding = new Padding(14, 6, 10, 6), Margin = new Padding(0, 0, 0, 6), Visible = false, BackColor = Color.FromArgb(240, 253, 244) };
+    private readonly Label _updateIcon = new() { Text = "✨", Font = new Font("Segoe UI", 11f, FontStyle.Bold), ForeColor = Color.FromArgb(22, 163, 74), AutoSize = true, Margin = new Padding(0, 3, 8, 0), BackColor = Color.Transparent };
+    private readonly Label _updateText = new() { AutoSize = true, Font = Ui.Font(9f, FontStyle.Bold), ForeColor = Color.FromArgb(22, 101, 52), Margin = new Padding(0, 4, 8, 0), BackColor = Color.Transparent };
+    private readonly ModernButton _updateActionBtn = new() { AutoSize = true, MinimumSize = new Size(110, 26), BorderRadius = 4, UseMnemonic = false, Margin = new Padding(0, 0, 6, 0) };
+    private readonly ModernButton _updateCloseBtn = new() { Text = "✕", AutoSize = false, Size = new Size(26, 26), BorderRadius = 4, UseMnemonic = false, Margin = new Padding(0) };
+    private ReleaseInfo? _pendingUpdate;
 
     // ---- Guide Banner ----
     private readonly TableLayoutPanel _guide = new() { Dock = DockStyle.Fill, AutoSize = true, ColumnCount = 2, RowCount = 1, Padding = new Padding(14, 6, 14, 6), Margin = new Padding(0, 2, 0, 6) };
@@ -203,17 +212,21 @@ internal sealed class MainForm : Form
         {
             Dock = DockStyle.Fill,
             ColumnCount = 1,
-            RowCount = 3,
+            RowCount = 4,
             Padding = new Padding(12, 8, 12, 10),
             BackColor = Color.FromArgb(248, 250, 252)
         };
-        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));          // 0: Guide Banner (~36px)
-        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));      // 1: Main Workspace (Branches sidebar + Right panel)
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 124));     // 2: Activity Log
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));          // 0: Update Banner (hidden unless newer release found)
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));          // 1: Guide Banner (~36px)
+        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));      // 2: Main Workspace (Branches sidebar + Right panel)
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 124));     // 3: Activity Log
 
-        // Guide Banner
+        // Update Banner + Guide Banner
+        BuildUpdateBanner();
+        root.Controls.Add(_updateBanner, 0, 0);
+
         BuildGuide();
-        root.Controls.Add(_guide, 0, 0);
+        root.Controls.Add(_guide, 0, 1);
 
         // Main Workspace TableLayoutPanel: Left Sidebar (Branches) + Right Panel
         var workspace = new TableLayoutPanel
@@ -300,13 +313,13 @@ internal sealed class MainForm : Form
         rightPanel.Controls.Add(_recCard, 0, 2);
 
         workspace.Controls.Add(rightPanel, 1, 0);
-        root.Controls.Add(workspace, 0, 1);
+        root.Controls.Add(workspace, 0, 2);
 
         // Activity Log Card
         BuildLogCard();
         _logCard.Dock = DockStyle.Fill;
         _logCard.Margin = new Padding(0, 8, 0, 0);
-        root.Controls.Add(_logCard, 0, 2);
+        root.Controls.Add(_logCard, 0, 3);
 
         // Dock to Form
         Controls.Add(_appBar);
@@ -839,6 +852,76 @@ internal sealed class MainForm : Form
         host.BringToFront();
     }
 
+    private void BuildUpdateBanner()
+    {
+        _updateBanner.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        _updateBanner.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        _updateBanner.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        _updateBanner.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+
+        Ui.StyleSuccess(_updateActionBtn);
+        _updateActionBtn.Font = Ui.Font(8.5f, FontStyle.Bold);
+        _updateActionBtn.Click += (_, _) => OpenUpdateDialog();
+
+        _updateCloseBtn.NormalColor = Color.Transparent;
+        _updateCloseBtn.HoverColor = Color.FromArgb(220, 252, 231);
+        _updateCloseBtn.ForeColor = Color.FromArgb(22, 101, 52);
+        _updateCloseBtn.BorderColor = Color.Transparent;
+        _updateCloseBtn.Font = Ui.Font(9f, FontStyle.Bold);
+        _updateCloseBtn.Click += (_, _) => _updateBanner.Visible = false;
+
+        _updateBanner.Controls.Add(_updateIcon, 0, 0);
+        _updateBanner.Controls.Add(_updateText, 1, 0);
+        _updateBanner.Controls.Add(_updateActionBtn, 2, 0);
+        _updateBanner.Controls.Add(_updateCloseBtn, 3, 0);
+
+        _updateBanner.Paint += (_, e) =>
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            using var pen = new Pen(Color.FromArgb(134, 239, 172), 1);
+            e.Graphics.DrawRectangle(pen, 0, 0, _updateBanner.Width - 1, _updateBanner.Height - 1);
+
+            using var stripeBrush = new SolidBrush(Color.FromArgb(22, 163, 74));
+            e.Graphics.FillRectangle(stripeBrush, 0, 0, Ui.S(_updateBanner, 4), _updateBanner.Height);
+        };
+
+        _relabel.Add(RefreshUpdateBannerText);
+    }
+
+    private void RefreshUpdateBannerText()
+    {
+        _updateActionBtn.Text = Loc.T("Update Now");
+        if (_pendingUpdate is not null)
+        {
+            _updateText.Text = Loc.F("Update available: v{0} — A newer version of CCTV Backup is ready.", AppUpdater.FormatVersion(_pendingUpdate.Version));
+        }
+    }
+
+    private void OpenUpdateDialog()
+    {
+        if (_pendingUpdate is null) return;
+        using var dlg = new UpdateDialog(_pendingUpdate);
+        dlg.ShowDialog(this);
+    }
+
+    private async Task CheckForUpdatesOnStartupAsync()
+    {
+        if (Environment.GetCommandLineArgs().Contains("--screenshot", StringComparer.OrdinalIgnoreCase)) return;
+        var release = await AppUpdater.TryCheckForUpdateSilentAsync().ConfigureAwait(false);
+        if (release is null) return;
+
+        if (IsHandleCreated && !IsDisposed)
+        {
+            BeginInvoke(() =>
+            {
+                if (IsDisposed) return;
+                _pendingUpdate = release;
+                RefreshUpdateBannerText();
+                _updateBanner.Visible = true;
+            });
+        }
+    }
+
     private void BuildGuide()
     {
         _guide.BackColor = Color.FromArgb(239, 246, 255);
@@ -1085,6 +1168,7 @@ internal sealed class MainForm : Form
         _dest.Text = _settings.LastDestination;
         EnsureSdkFolder();
         LoadBranches();
+        _ = CheckForUpdatesOnStartupAsync();
     }
 
     private void EnsureSdkFolder()

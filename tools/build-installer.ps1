@@ -11,13 +11,35 @@
 #>
 param(
     [switch]$SkipPublish,
-    [string]$CmsFolder = 'C:\Program Files (x86)\CMS'
+    [string]$CmsFolder = 'C:\Program Files (x86)\CMS',
+    [string]$UpdateRepo = '',
+    [string]$UpdateToken = ''
 )
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 Set-Location $root
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+if ($UpdateRepo) {
+    $cfgFile = Join-Path $root 'src\CctvBackup.Core\Updates\AppUpdater.Config.local.cs'
+    $safeRepo = $UpdateRepo.Replace('"', '\"')
+    $safeToken = $UpdateToken.Replace('"', '\"')
+    $cfgBody = @"
+namespace CctvBackup.Core.Updates;
+
+public static partial class AppUpdater
+{
+    static partial void OverrideGitHubConfig(ref string ownerRepo, ref string token)
+    {
+        ownerRepo = "$safeRepo";
+        token = "$safeToken";
+    }
+}
+"@
+    Set-Content -Path $cfgFile -Value $cfgBody -Encoding UTF8
+    Write-Host "Updated local updater config ($UpdateRepo)."
+}
 
 # ---- version, from the program's project file ----
 $csproj = [xml](Get-Content (Join-Path $root 'src\CctvBackup.App\CctvBackup.App.csproj'))

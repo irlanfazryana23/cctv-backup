@@ -30,7 +30,7 @@ PrivilegesRequiredOverridesAllowed=dialog
 ; Tells Windows that file associations changed, so Explorer shows the new icon and 'open with' at once.
 ChangesAssociations=yes
 CloseApplications=yes
-RestartApplications=no
+RestartApplications=yes
 VersionInfoVersion={#AppVersion}
 VersionInfoProductName={#AppName}
 VersionInfoDescription={#AppName} Setup

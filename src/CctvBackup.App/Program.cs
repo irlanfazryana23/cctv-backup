@@ -3,6 +3,7 @@ using CctvBackup.Core.Auth;
 using CctvBackup.Core.Localization;
 using CctvBackup.Core.Playback;
 using CctvBackup.Core.Settings;
+using CctvBackup.Core.Updates;
 
 namespace CctvBackup.App;
 
@@ -14,12 +15,16 @@ internal static class Program
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool AllocConsole();
 
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+    private static extern int RegisterApplicationRestart(string? pwzCommandline, int dwFlags);
+
     private const int ATTACH_PARENT_PROCESS = -1;
 
     [STAThread]
     private static void Main(string[] args)
     {
         ApplicationConfiguration.Initialize();
+        try { RegisterApplicationRestart("--restarted", 0); } catch { }
 
         // Language first, so even an early error message is in the chosen language.
         Loc.Set(Loc.Resolve(AppSettings.Load(AppPaths.SettingsFile).Language));
@@ -97,7 +102,13 @@ internal static class Program
                     Snap(mainId, "test_main_id.png");
                 }
 
+                Loc.Set(Loc.English);
                 using (var account = new AccountForm()) Snap(account, "test_account.png");
+                var sampleRelease = new ReleaseInfo(new Version(1, 0, 2), "v1.0.2", "CCTV-Backup-Setup-1.0.2.exe", "https://example.invalid/setup.exe", 50_650_000, null, "- Added automatic in-app updates\n- Improved UI responsiveness");
+                using (var upd = new UpdateDialog(sampleRelease)) Snap(upd, "test_update.png");
+                Loc.Set(Loc.Indonesian);
+                using (var updId = new UpdateDialog(sampleRelease)) Snap(updId, "test_update_id.png");
+                Loc.Set(Loc.English);
                 using (var client = new CctvBackup.Core.Dvr.XmDvrClient(CctvBackup.Core.Sdk.SdkLocator.BundledDirectory))
                 {
                     using (var branch = new BranchDialog(client, Array.Empty<string>(), null, null)) Snap(branch, "test_branch.png");

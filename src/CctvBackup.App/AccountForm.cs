@@ -1,6 +1,7 @@
 using System.Drawing.Drawing2D;
 using CctvBackup.Core.Auth;
 using CctvBackup.Core.Localization;
+using CctvBackup.Core.Updates;
 
 namespace CctvBackup.App;
 
@@ -16,7 +17,7 @@ internal sealed class AccountForm : Form
         MaximizeBox = false;
         MinimizeBox = false;
         StartPosition = FormStartPosition.CenterParent;
-        ClientSize = new Size(440, 480);
+        ClientSize = new Size(440, 530);
         BackColor = Color.FromArgb(248, 250, 252);
         Font = new Font("Segoe UI", 9.5f);
         DoubleBuffered = true;
@@ -172,8 +173,69 @@ internal sealed class AccountForm : Form
             Close();
         };
 
+        curY += 46;
+        var lblVersion = new Label
+        {
+            Text = Loc.F("Version v{0}", AppUpdater.FormatVersion(AppUpdater.CurrentAppVersion())),
+            Font = new Font("Segoe UI", 8.5f),
+            ForeColor = Color.FromArgb(100, 116, 139),
+            Location = new Point(startX, curY + 8),
+            Size = new Size(140, 20)
+        };
+
+        var btnCheckUpdate = new ModernButton
+        {
+            Text = "🔄 " + Loc.T("Check for updates"),
+            Location = new Point(startX + contentWidth - 220, curY),
+            Size = new Size(220, 34),
+            NormalColor = Color.White,
+            HoverColor = Color.FromArgb(239, 246, 255),
+            ForeColor = Color.FromArgb(37, 99, 235),
+            BorderColor = Color.FromArgb(191, 219, 254),
+            BorderRadius = 6,
+            Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
+            UseMnemonic = false
+        };
+        btnCheckUpdate.Click += async (_, _) =>
+        {
+            if (!AppUpdater.IsConfigured())
+            {
+                MessageBox.Show(this, Loc.T("Automatic updates are not configured in this build."), "CCTV Backup", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            btnCheckUpdate.Enabled = false;
+            string orig = btnCheckUpdate.Text;
+            btnCheckUpdate.Text = Loc.T("Checking for updates...");
+            try
+            {
+                var release = await AppUpdater.CheckForUpdateAsync();
+                if (release is not null)
+                {
+                    using var dlg = new UpdateDialog(release);
+                    dlg.ShowDialog(this);
+                }
+                else
+                {
+                    MessageBox.Show(this, Loc.F("You are already on the latest version (v{0}).", AppUpdater.FormatVersion(AppUpdater.CurrentAppVersion())), "CCTV Backup", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, Loc.F("Could not check for updates: {0}", ex.Message), "CCTV Backup", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                if (!btnCheckUpdate.IsDisposed)
+                {
+                    btnCheckUpdate.Text = orig;
+                    btnCheckUpdate.Enabled = true;
+                }
+            }
+        };
+
         body.Controls.AddRange(new Control[] {
-            lblChange, lblCurr, txtCurr, lblNew, txtNew, lblConf, txtConf, lblError, btnUpdate, divider, btnLock
+            lblChange, lblCurr, txtCurr, lblNew, txtNew, lblConf, txtConf, lblError, btnUpdate, divider, btnLock, lblVersion, btnCheckUpdate
         });
     }
 }

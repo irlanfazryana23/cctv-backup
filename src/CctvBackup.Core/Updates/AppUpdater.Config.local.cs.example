@@ -1,0 +1,17 @@
+// Copy this file to AppUpdater.Config.local.cs (which is gitignored via *.local.cs)
+// and fill in your private GitHub releases repository and read-only Fine-Grained PAT.
+//
+// Token permissions required on the releases repository ONLY:
+//   Contents: Read-only
+//   Metadata: Read-only (automatic)
+
+namespace CctvBackup.Core.Updates;
+
+public static partial class AppUpdater
+{
+    static partial void OverrideGitHubConfig(ref string ownerRepo, ref string token)
+    {
+        ownerRepo = "irlanfazryana23/cctv-backup-releases";
+        token = "github_pat_CHANGE-ME";
+    }
+}
