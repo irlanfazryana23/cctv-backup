@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="using:CctvBackup.Desktop.Views"
+        x:Class="CctvBackup.Desktop.Views.CmsImportWindow"
+        Title="Import Branches from CMS XML"
+        Icon="/Assets/logo.png"
+        Width="580" Height="620"
+        WindowStartupLocation="CenterOwner">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="16">
+        <!-- Top instructions & browse -->
+        <StackPanel Grid.Row="0" Spacing="8">
+            <TextBlock Text="Select a CMS XML configuration file (device.xml) or paste its XML content:" TextWrapping="Wrap"/>
+            <Grid ColumnDefinitions="*,Auto">
+                <Button x:Name="BtnBrowseXml" Grid.Column="0" Content="Browse XML File..." Height="32"/>
+                <Button x:Name="BtnParseXml" Grid.Column="1" Content="Parse / Refresh" Height="32" Margin="8,0,0,0"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- XML paste / Preview branch list split -->
+        <Grid Grid.Row="1" RowDefinitions="*,*" Margin="0,12,0,12">
+            <StackPanel Grid.Row="0" Spacing="4">
+                <TextBlock Text="XML Content (or paste here):" FontWeight="SemiBold"/>
+                <TextBox x:Name="TxtXml" Height="140" AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Monospace" FontSize="11"/>
+            </StackPanel>
+
+            <Grid Grid.Row="1" RowDefinitions="Auto,*" Margin="0,8,0,0">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Detected Branches:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                        <Button x:Name="BtnSelectAll" Content="Select All" Height="26" FontSize="11"/>
+                        <Button x:Name="BtnSelectNone" Content="Select None" Height="26" FontSize="11"/>
+                    </StackPanel>
+                </Grid>
+                <ListBox x:Name="ListCandidates" Grid.Row="1" Margin="0,6,0,0" BorderBrush="#d0d7de" BorderThickness="1">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="views:CmsCandidateItem">
+                            <CheckBox IsChecked="{Binding IsSelected}" Margin="2">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Subtitle}" Foreground="#59636e"/>
+                                    <TextBlock Text="{Binding StatusText}" Foreground="#0969da" FontSize="11"/>
+                                </StackPanel>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Grid>
+
+        <!-- Password and errors -->
+        <StackPanel Grid.Row="2" Spacing="6" Margin="0,0,0,10">
+            <TextBlock Text="Default DVR Password for imported branches (optional):" FontWeight="SemiBold"/>
+            <TextBox x:Name="TxtDefaultPassword" PasswordChar="•" PlaceholderText="(Optional)"/>
+            <TextBlock x:Name="TxtStatus" TextWrapping="Wrap" Foreground="#cf222e"/>
+        </StackPanel>
+
+        <!-- Bottom buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button x:Name="BtnCancel" Content="Cancel" Width="90" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <Button x:Name="BtnImport" Content="Import Selected" Classes="primary" Width="140" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsDefault="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

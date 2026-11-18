@@ -1,0 +1,149 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="CctvBackup.Desktop.Views.LoginWindow"
+        Title="CCTV Backup — Authentication"
+        Icon="/Assets/logo.png"
+        Width="440" Height="510"
+        MinWidth="400" MinHeight="450"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Top banner -->
+        <Border Grid.Row="0" Padding="18,14">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#0f172a" Offset="0"/>
+                    <GradientStop Color="#1e3a8a" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                <Border CornerRadius="8" ClipToBounds="True" Width="36" Height="36" Background="#ffffff">
+                    <Image Source="/Assets/logo.png" Width="30" Height="30" Stretch="Uniform"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="CCTV Backup" FontSize="16" FontWeight="Bold" Foreground="#ffffff"/>
+                    <TextBlock Text="Authentication &amp; Access Control" FontSize="11" Foreground="#94a3b8"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Main content area -->
+        <Border Grid.Row="1" Background="#f8fafc" Padding="24,20">
+            <Panel>
+                <!-- 1. LOGIN PANEL -->
+                <StackPanel x:Name="PanelLogin" Spacing="12" VerticalAlignment="Center">
+                    <TextBlock Text="Sign In" FontSize="18" FontWeight="Bold" Foreground="#0f172a" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Enter your credentials to unlock the application." FontSize="11.5" Foreground="#64748b" HorizontalAlignment="Center"/>
+
+                    <!-- Error box -->
+                    <Border x:Name="BoxLoginError" Background="#fee2e2" BorderBrush="#fca5a5" BorderThickness="1" CornerRadius="6" Padding="10,6" IsVisible="False">
+                        <TextBlock x:Name="TxtLoginError" Foreground="#b91c1c" FontSize="11.5" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                    </Border>
+
+                    <!-- Inputs -->
+                    <StackPanel Spacing="10" Margin="0,8,0,0">
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="Username" FontSize="11.5" FontWeight="SemiBold" Foreground="#334155"/>
+                            <TextBox x:Name="TxtLoginUsername" Height="34" FontSize="12.5"/>
+                        </StackPanel>
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="Password" FontSize="11.5" FontWeight="SemiBold" Foreground="#334155"/>
+                            <TextBox x:Name="TxtLoginPassword" PasswordChar="•" Height="34" FontSize="12.5"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Buttons -->
+                    <Button x:Name="BtnLogin" Classes="primary" Content="Unlock" Height="36" Margin="0,10,0,0" HorizontalAlignment="Stretch" IsDefault="True"/>
+                    <Button x:Name="BtnGoForgot" Classes="ghost" Content="Forgot password?" HorizontalAlignment="Center" FontSize="11.5" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- 2. FIRST-TIME SETUP PANEL -->
+                <StackPanel x:Name="PanelSetup" Spacing="10" VerticalAlignment="Center" IsVisible="False">
+                    <TextBlock Text="Set Up Admin Account" FontSize="18" FontWeight="Bold" Foreground="#0f172a" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Create your admin credentials to protect CCTV backups." FontSize="11.5" Foreground="#64748b" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
+
+                    <!-- Error box -->
+                    <Border x:Name="BoxSetupError" Background="#fee2e2" BorderBrush="#fca5a5" BorderThickness="1" CornerRadius="6" Padding="10,6" IsVisible="False">
+                        <TextBlock x:Name="TxtSetupError" Foreground="#b91c1c" FontSize="11.5" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                    </Border>
+
+                    <!-- Inputs -->
+                    <StackPanel Spacing="8" Margin="0,4,0,0">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="Admin Username" FontSize="11" FontWeight="SemiBold" Foreground="#334155"/>
+                            <TextBox x:Name="TxtSetupUsername" Text="admin" Height="32" FontSize="12"/>
+                        </StackPanel>
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="Password" FontSize="11" FontWeight="SemiBold" Foreground="#334155"/>
+                            <TextBox x:Name="TxtSetupPassword" PasswordChar="•" Height="32" FontSize="12"/>
+                        </StackPanel>
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="Confirm Password" FontSize="11" FontWeight="SemiBold" Foreground="#334155"/>
+                            <TextBox x:Name="TxtSetupConfirm" PasswordChar="•" Height="32" FontSize="12"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button x:Name="BtnSetupCreate" Classes="primary" Content="Create Account &amp; Continue" Height="36" Margin="0,10,0,0" HorizontalAlignment="Stretch" IsDefault="True"/>
+                </StackPanel>
+
+                <!-- 3. FORGOT PASSWORD / RECOVERY PANEL -->
+                <StackPanel x:Name="PanelRecovery" Spacing="10" VerticalAlignment="Center" IsVisible="False">
+                    <TextBlock Text="Reset Password" FontSize="18" FontWeight="Bold" Foreground="#0f172a" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Enter your Master Recovery Key to set a new password." FontSize="11.5" Foreground="#64748b" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
+
+                    <!-- Error box -->
+                    <Border x:Name="BoxRecoveryError" Background="#fee2e2" BorderBrush="#fca5a5" BorderThickness="1" CornerRadius="6" Padding="10,6" IsVisible="False">
+                        <TextBlock x:Name="TxtRecoveryError" Foreground="#b91c1c" FontSize="11.5" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                    </Border>
+
+                    <!-- Inputs -->
+                    <StackPanel Spacing="8" Margin="0,4,0,0">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="Master Recovery Key" FontSize="11" FontWeight="SemiBold" Foreground="#334155"/>
+                            <TextBox x:Name="TxtRecoveryKey" PlaceholderText="e.g. CCTV-8924-1832" Height="32" FontSize="12"/>
+                        </StackPanel>
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="New Username (Optional)" FontSize="11" FontWeight="SemiBold" Foreground="#334155"/>
+                            <TextBox x:Name="TxtRecoveryUsername" Height="32" FontSize="12"/>
+                        </StackPanel>
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="New Password" FontSize="11" FontWeight="SemiBold" Foreground="#334155"/>
+                            <TextBox x:Name="TxtRecoveryPassword" PasswordChar="•" Height="32" FontSize="12"/>
+                        </StackPanel>
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="Confirm New Password" FontSize="11" FontWeight="SemiBold" Foreground="#334155"/>
+                            <TextBox x:Name="TxtRecoveryConfirm" PasswordChar="•" Height="32" FontSize="12"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                        <Button x:Name="BtnRecoveryCancel" Classes="ghost" Content="Back" Grid.Column="0" Height="34" Margin="0,0,4,0" HorizontalAlignment="Stretch"/>
+                        <Button x:Name="BtnRecoveryReset" Classes="primary" Content="Reset &amp; Unlock" Grid.Column="1" Height="34" Margin="4,0,0,0" HorizontalAlignment="Stretch" IsDefault="True"/>
+                    </Grid>
+                </StackPanel>
+
+                <!-- 4. RECOVERY KEY NOTICE PANEL (After initial setup or reset) -->
+                <StackPanel x:Name="PanelShowKey" Spacing="12" VerticalAlignment="Center" IsVisible="False">
+                    <Border Width="48" Height="48" CornerRadius="24" Background="#dcfce7" HorizontalAlignment="Center">
+                        <TextBlock Text="✓" FontSize="24" FontWeight="Bold" Foreground="#15803d" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Save Your Recovery Key" FontSize="18" FontWeight="Bold" Foreground="#0f172a" HorizontalAlignment="Center"/>
+                    <TextBlock Text="If you ever forget your password, this key will unlock your account:" FontSize="11.5" Foreground="#64748b" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
+
+                    <!-- Key display box -->
+                    <Border Background="#ffffff" BorderBrush="#2563eb" BorderThickness="2" CornerRadius="8" Padding="14,10" Margin="0,6">
+                        <SelectableTextBlock x:Name="TxtGeneratedKey" FontSize="18" FontWeight="Bold" Foreground="#1d4ed8" HorizontalAlignment="Center" LetterSpacing="2"/>
+                    </Border>
+
+                    <TextBlock Text="Write this key down or keep it in a password manager. It cannot be viewed again once you proceed." FontSize="11" Foreground="#dc2626" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
+
+                    <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                        <Button x:Name="BtnCopyKey" Classes="ghost" Content="Copy Key" Grid.Column="0" Height="36" Margin="0,0,4,0" HorizontalAlignment="Stretch"/>
+                        <Button x:Name="BtnProceedMain" Classes="success" Content="Open CCTV Backup" Grid.Column="1" Height="36" Margin="4,0,0,0" HorizontalAlignment="Stretch" IsDefault="True"/>
+                    </Grid>
+                </StackPanel>
+            </Panel>
+        </Border>
+    </Grid>
+</Window>

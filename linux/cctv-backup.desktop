@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=CCTV Backup
+GenericName=CCTV DVR Footage Backup Tool
+Comment=Back up recorded footage from Xiongmai (XM) branch DVRs via Serial ID (Cloud) or IP
+Exec=cctv-backup
+Terminal=false
+Categories=Utility;Archiving;Network;
+StartupNotify=true

@@ -1,0 +1,47 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="CctvBackup.Desktop.Views.AccountWindow"
+        Title="Admin Account Settings"
+        Icon="/Assets/logo.png"
+        Width="400" Height="380"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="20">
+        <!-- Title -->
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,14">
+            <TextBlock Text="Change Admin Password" FontSize="16" FontWeight="Bold" Foreground="#0f172a"/>
+            <TextBlock Text="Update your admin username and password." FontSize="11.5" Foreground="#64748b"/>
+
+            <Border x:Name="BoxError" Background="#fee2e2" BorderBrush="#fca5a5" BorderThickness="1" CornerRadius="6" Padding="8,4" Margin="0,6,0,0" IsVisible="False">
+                <TextBlock x:Name="TxtError" Foreground="#b91c1c" FontSize="11" TextWrapping="Wrap"/>
+            </Border>
+        </StackPanel>
+
+        <!-- Form -->
+        <StackPanel Grid.Row="1" Spacing="10">
+            <StackPanel Spacing="2">
+                <TextBlock Text="Current Password" FontSize="11" FontWeight="SemiBold" Foreground="#334155"/>
+                <TextBox x:Name="TxtCurrentPassword" PasswordChar="•" Height="32" FontSize="12"/>
+            </StackPanel>
+            <StackPanel Spacing="2">
+                <TextBlock Text="Username" FontSize="11" FontWeight="SemiBold" Foreground="#334155"/>
+                <TextBox x:Name="TxtUsername" Height="32" FontSize="12"/>
+            </StackPanel>
+            <StackPanel Spacing="2">
+                <TextBlock Text="New Password" FontSize="11" FontWeight="SemiBold" Foreground="#334155"/>
+                <TextBox x:Name="TxtNewPassword" PasswordChar="•" Height="32" FontSize="12"/>
+            </StackPanel>
+            <StackPanel Spacing="2">
+                <TextBlock Text="Confirm New Password" FontSize="11" FontWeight="SemiBold" Foreground="#334155"/>
+                <TextBox x:Name="TxtConfirmPassword" PasswordChar="•" Height="32" FontSize="12"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,14,0,0">
+            <Button x:Name="BtnCancel" Classes="ghost" Content="Cancel" Width="80" Height="32"/>
+            <Button x:Name="BtnSave" Classes="primary" Content="Save Changes" Width="110" Height="32" IsDefault="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

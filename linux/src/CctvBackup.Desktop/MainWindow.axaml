@@ -1,0 +1,369 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:CctvBackup.Desktop.ViewModels"
+        x:Class="CctvBackup.Desktop.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="CCTV Backup"
+        Icon="/Assets/logo.png"
+        Width="1160" Height="670"
+        MinWidth="920" MinHeight="500"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>               <!-- app bar -->
+            <RowDefinition Height="Auto"/>               <!-- guide -->
+            <RowDefinition Height="*" MinHeight="260"/>  <!-- workspace -->
+            <RowDefinition Height="6"/>                  <!-- splitter -->
+            <RowDefinition Height="110" MinHeight="50"/> <!-- activity log -->
+        </Grid.RowDefinitions>
+
+        <!-- ================= 1. App bar ================= -->
+        <Border Grid.Row="0" Padding="14,8">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#0f172a" Offset="0"/>
+                    <GradientStop Color="#1e3a8a" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <Border CornerRadius="8" ClipToBounds="True" Width="32" Height="32" Background="#ffffff">
+                        <Image Source="/Assets/logo.png" Width="28" Height="28" Stretch="Uniform"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center" Spacing="0">
+                        <TextBlock Text="CCTV Backup" FontSize="15" FontWeight="Bold" Foreground="#ffffff"/>
+                        <TextBlock Text="Xiongmai DVR recordings backup • Linux edition" FontSize="10.5" Foreground="#94a3b8"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <Button x:Name="BtnAccount" Classes="appbar" Content="Account…" ToolTip.Tip="Change admin password" Padding="10,3" FontSize="11"/>
+                    <Button x:Name="BtnLock" Classes="appbar" Content="Lock" ToolTip.Tip="Lock application" Padding="10,3" FontSize="11"/>
+                    <Button x:Name="BtnCopyLog" Classes="appbar" Content="Copy log" Padding="10,3" FontSize="11"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ================= 2. Guide strip ================= -->
+        <Border Grid.Row="1" Background="#ffffff" BorderBrush="#e2e8f0" BorderThickness="0,0,0,1" Padding="14,6">
+            <Grid ColumnDefinitions="Auto,*">
+                <Border Grid.Column="0" Width="18" Height="18" CornerRadius="9" Background="#dbeafe" VerticalAlignment="Center" Margin="0,0,8,0">
+                    <TextBlock Text="i" FontWeight="Bold" FontSize="11" Foreground="#1d4ed8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Grid.Column="1" Text="{Binding GuideText}" Foreground="#1e293b" FontSize="11.5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+            </Grid>
+        </Border>
+
+        <!-- ================= 3. Workspace ================= -->
+        <Grid Grid.Row="2" ColumnDefinitions="220,*" Margin="10,8,10,0">
+
+            <!-- Sidebar: branches -->
+            <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                <Grid RowDefinitions="Auto,Auto,*,Auto">
+                    <!-- Title -->
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="10,8,8,6">
+                        <Border Grid.Column="0" Classes="step" Margin="0,0,6,0"><TextBlock Text="1"/></Border>
+                        <TextBlock Grid.Column="1" Classes="title" Text="Branches"/>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <Button x:Name="BtnBranchTickAll" Classes="ghost" Content="All" ToolTip.Tip="Tick all branches"/>
+                            <Button x:Name="BtnBranchUntickAll" Classes="ghost" Content="None" ToolTip.Tip="Untick all branches"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Search -->
+                    <TextBox Grid.Row="1" Text="{Binding BranchFilter, Mode=TwoWay}" PlaceholderText="Search branches…" Margin="8,0,8,6"/>
+
+                    <!-- List -->
+                    <ListBox x:Name="ListBranches" Grid.Row="2" Classes="sidebar"
+                             ItemsSource="{Binding FilteredBranches}"
+                             SelectedItem="{Binding SelectedBranch, Mode=TwoWay}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:BranchItemViewModel">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked}" VerticalAlignment="Center" MinWidth="0" Margin="0,0,6,0"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="12" Foreground="#0f172a" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Subtitle}" FontSize="10" Foreground="#64748b" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="2" Classes="chip" Margin="4,0,0,0">
+                                        <TextBlock Text="{Binding CameraCountText}"/>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <!-- Branch actions -->
+                    <Border Grid.Row="3" BorderBrush="#e2e8f0" BorderThickness="0,1,0,0" Padding="8,8" Background="#f8fafc" CornerRadius="0,0,10,10">
+                        <StackPanel Spacing="5">
+                            <Grid ColumnDefinitions="*,*,*">
+                                <Button x:Name="BtnAddBranch" Grid.Column="0" Content="+ Add" HorizontalAlignment="Stretch" Margin="0,0,2,0" MinHeight="26" FontSize="11"/>
+                                <Button x:Name="BtnEditBranch" Grid.Column="1" Content="Edit" HorizontalAlignment="Stretch" Margin="2,0" MinHeight="26" FontSize="11"/>
+                                <Button x:Name="BtnRemoveBranch" Grid.Column="2" Classes="danger" Content="Del" HorizontalAlignment="Stretch" Margin="2,0,0,0" MinHeight="26" FontSize="11"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="*,*">
+                                <Button x:Name="BtnTestConn" Grid.Column="0" Classes="primary" Content="Test connection" HorizontalAlignment="Stretch" Margin="0,0,2,0" MinHeight="26" FontSize="11"/>
+                                <Button x:Name="BtnImportCms" Grid.Column="1" Content="Import CMS…" HorizontalAlignment="Stretch" Margin="2,0,0,0" MinHeight="26" FontSize="11"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Main column -->
+            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*">
+
+                <!-- Settings row: cameras | period | destination -->
+                <Grid Grid.Row="0" ColumnDefinitions="1*,1.15*,1*" Margin="0,0,0,8">
+
+                    <!-- 2. Cameras -->
+                    <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                        <Grid RowDefinitions="Auto,*">
+                            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="10,8,8,6">
+                                <Border Grid.Column="0" Classes="step" Margin="0,0,6,0"><TextBlock Text="2"/></Border>
+                                <TextBlock Grid.Column="1" Classes="title" Text="Cameras"/>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                    <Button x:Name="BtnCamTickAll" Classes="ghost" Content="All" ToolTip.Tip="Tick all cameras"/>
+                                    <Button x:Name="BtnCamUntickAll" Classes="ghost" Content="None" ToolTip.Tip="Untick all cameras"/>
+                                </StackPanel>
+                            </Grid>
+                            <ScrollViewer Grid.Row="1" Margin="8,0,8,8" Height="106" VerticalScrollBarVisibility="Auto">
+                                <Panel>
+                                    <ItemsControl ItemsSource="{Binding Cameras}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate><WrapPanel Orientation="Horizontal"/></ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:CameraItemViewModel">
+                                                <Border Background="#f8fafc" BorderBrush="#e2e8f0" BorderThickness="1" CornerRadius="6" Margin="2" Padding="6,0,8,0">
+                                                    <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Name}" FontSize="11" MinHeight="26"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <TextBlock Text="Select a branch to see its cameras."
+                                               Classes="muted" TextWrapping="Wrap" Margin="4,6"
+                                               IsVisible="{Binding !Cameras.Count}"/>
+                                </Panel>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+
+                    <!-- 3. Period -->
+                    <Border Grid.Column="1" Classes="card" Margin="0,0,8,0">
+                        <StackPanel Margin="10,8,10,8" Spacing="6">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Classes="step"><TextBlock Text="3"/></Border>
+                                <TextBlock Classes="title" Text="Period"/>
+                                <TextBlock Classes="muted" Text="(DVR clock)" VerticalAlignment="Center" FontSize="10.5"/>
+                            </StackPanel>
+
+                            <Grid ColumnDefinitions="36,*,6,68">
+                                <TextBlock Grid.Column="0" Classes="label" Text="From" VerticalAlignment="Center"/>
+                                <CalendarDatePicker Grid.Column="1" SelectedDate="{Binding FromDay, Mode=TwoWay}"
+                                                    SelectedDateFormat="Custom" CustomDateFormatString="yyyy-MM-dd"
+                                                    HorizontalAlignment="Stretch"/>
+                                <TextBox Grid.Column="3" Text="{Binding FromTimeText, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                         PlaceholderText="HH:mm" HorizontalContentAlignment="Center" MaxLength="5"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="36,*,6,68">
+                                <TextBlock Grid.Column="0" Classes="label" Text="To" VerticalAlignment="Center"/>
+                                <CalendarDatePicker Grid.Column="1" SelectedDate="{Binding ToDay, Mode=TwoWay}"
+                                                    SelectedDateFormat="Custom" CustomDateFormatString="yyyy-MM-dd"
+                                                    HorizontalAlignment="Stretch"/>
+                                <TextBox Grid.Column="3" Text="{Binding ToTimeText, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                         PlaceholderText="HH:mm" HorizontalContentAlignment="Center" MaxLength="5"/>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*,*" Margin="36,1,0,0">
+                                <Button x:Name="BtnYesterday" Grid.Column="0" Classes="pill" Content="Yesterday" HorizontalAlignment="Stretch" Margin="0,0,2,0"/>
+                                <Button x:Name="BtnToday" Grid.Column="1" Classes="pill" Content="Today" HorizontalAlignment="Stretch" Margin="2,0"/>
+                                <Button x:Name="BtnLast7Days" Grid.Column="2" Classes="pill" Content="Last 7 days" HorizontalAlignment="Stretch" Margin="2,0,0,0"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 4. Destination -->
+                    <Border Grid.Column="2" Classes="card">
+                        <StackPanel Margin="10,8,10,8" Spacing="6">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Classes="step"><TextBlock Text="4"/></Border>
+                                <TextBlock Classes="title" Text="Save to"/>
+                            </StackPanel>
+
+                            <TextBox Text="{Binding Destination, Mode=TwoWay}" PlaceholderText="Choose a folder…" FontSize="11.5"/>
+
+                            <Grid ColumnDefinitions="*,*">
+                                <Button x:Name="BtnBrowseDest" Grid.Column="0" Content="Browse…" HorizontalAlignment="Stretch" Margin="0,0,3,0" MinHeight="26" FontSize="11"/>
+                                <Button x:Name="BtnOpenDest" Grid.Column="1" Content="Open folder" HorizontalAlignment="Stretch" Margin="3,0,0,0" MinHeight="26" FontSize="11"/>
+                            </Grid>
+
+                            <Border Background="#f8fafc" BorderBrush="#e2e8f0" BorderThickness="1" CornerRadius="6" Padding="8,4" MinHeight="24">
+                                <TextBlock Text="{Binding FreeDiskSpaceText}" FontSize="10.5" Foreground="#475569" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Action bar -->
+                <Border Grid.Row="1" Classes="card" Margin="0,0,0,8" Padding="10,7">
+                    <Grid ColumnDefinitions="Auto,Auto,Auto,*">
+                        <Button x:Name="BtnFind" Grid.Column="0" Classes="primary" Content="Find recordings" MinHeight="34" Padding="14,0" FontSize="12.5" IsEnabled="{Binding CanFind}"/>
+                        <Button x:Name="BtnDownload" Grid.Column="1" Classes="success" Content="Download selected" MinHeight="34" Padding="14,0" Margin="6,0,0,0" FontSize="12.5" IsEnabled="{Binding CanDownload}"/>
+                        <Button x:Name="BtnCancel" Grid.Column="2" Classes="danger" Content="Cancel" MinHeight="34" Padding="12,0" Margin="6,0,0,0" FontSize="12.5" IsEnabled="{Binding CanCancel}"/>
+
+                        <!-- Download Progress & Status Area -->
+                        <Panel Grid.Column="3" Margin="12,0,2,0" VerticalAlignment="Center">
+                            <!-- Active Download Card -->
+                            <Border Background="#f0fdf4" BorderBrush="#bbf7d0" BorderThickness="1" CornerRadius="7" Padding="10,5" IsVisible="{Binding ShowOverallProgress}">
+                                <Grid RowDefinitions="Auto,Auto" RowSpacing="4">
+                                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <TextBlock Text="⬇" Foreground="#15803d" FontWeight="Bold" FontSize="11.5"/>
+                                            <TextBlock Text="{Binding SummaryText}" FontWeight="SemiBold" FontSize="11.5" Foreground="#166534" TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="{Binding OverallProgressText}" FontWeight="Bold" FontSize="11.5" Foreground="#15803d" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <ProgressBar Classes="overall" Grid.Row="1" Value="{Binding OverallPercent}" Minimum="0" Maximum="100"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Idle Selection Summary (when not downloading) -->
+                            <TextBlock Text="{Binding SummaryText}" FontWeight="SemiBold" FontSize="12" Foreground="#334155" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" IsVisible="{Binding !ShowOverallProgress}"/>
+                        </Panel>
+                    </Grid>
+                </Border>
+
+                <!-- Recordings table -->
+                <Border Grid.Row="2" Classes="card" ClipToBounds="True">
+                    <Grid RowDefinitions="Auto,Auto,*">
+                        <!-- Table title -->
+                        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*,Auto" Margin="10,6,8,5">
+                            <TextBlock Grid.Column="0" Classes="title" Text="Recordings"/>
+                            <Border Grid.Column="1" Classes="chip" Margin="6,0,0,0" IsVisible="{Binding HasRecordings}">
+                                <TextBlock Text="{Binding RecordingCountText}"/>
+                            </Border>
+                            <StackPanel Grid.Column="3" Orientation="Horizontal" IsVisible="{Binding HasRecordings}">
+                                <Button x:Name="BtnRecTickAll" Classes="ghost" Content="Select all"/>
+                                <Button x:Name="BtnRecUntickAll" Classes="ghost" Content="Select none"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Column headers -->
+                        <Border Grid.Row="1" Background="#f8fafc" BorderBrush="#e2e8f0" BorderThickness="0,1" Padding="10,6">
+                            <Grid ColumnDefinitions="32,170,70,135,75,125,*,85,80">
+                                <TextBlock Grid.Column="1" Classes="colhead" Text="BRANCH"/>
+                                <TextBlock Grid.Column="2" Classes="colhead" Text="CAMERA"/>
+                                <TextBlock Grid.Column="3" Classes="colhead" Text="RECORDED"/>
+                                <TextBlock Grid.Column="4" Classes="colhead" Text="SIZE" HorizontalAlignment="Right" Margin="0,0,10,0"/>
+                                <TextBlock Grid.Column="5" Classes="colhead" Text="STATUS"/>
+                                <TextBlock Grid.Column="6" Classes="colhead" Text="PROGRESS" Margin="12,0,0,0"/>
+                                <TextBlock Grid.Column="7" Classes="colhead" Text="SPEED" HorizontalAlignment="Right" Margin="0,0,10,0"/>
+                                <TextBlock Grid.Column="8" Classes="colhead" Text="TIME LEFT" HorizontalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Rows / empty state -->
+                        <Panel Grid.Row="2">
+                            <ListBox x:Name="ListRecordings" Classes="table" ItemsSource="{Binding Recordings}" IsVisible="{Binding HasRecordings}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:RecordingItemViewModel">
+                                        <Grid ColumnDefinitions="32,170,70,135,75,125,*,85,80" Background="Transparent" ToolTip.Tip="{Binding Error}" ClipToBounds="True">
+                                            <!-- Tick -->
+                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" IsEnabled="{Binding CanChangeSelection}" MinWidth="0" VerticalAlignment="Center"/>
+
+                                            <!-- Branch (+ error line) -->
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1" Margin="0,0,8,0">
+                                                <TextBlock Text="{Binding BranchName}" FontSize="12" FontWeight="SemiBold" Foreground="#0f172a" TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{Binding Error}" FontSize="10" Foreground="#dc2626" TextTrimming="CharacterEllipsis" IsVisible="{Binding HasError}"/>
+                                            </StackPanel>
+
+                                            <!-- Camera -->
+                                            <Border Grid.Column="2" Classes="chip" HorizontalAlignment="Left">
+                                                <TextBlock Text="{Binding CameraName}"/>
+                                            </Border>
+
+                                            <!-- Recorded -->
+                                            <StackPanel Grid.Column="3" VerticalAlignment="Center" Spacing="1">
+                                                <TextBlock Text="{Binding TimeRangeText}" FontSize="12" FontWeight="SemiBold" Foreground="#0f172a"/>
+                                                <TextBlock Text="{Binding DateText}" FontSize="10" Foreground="#64748b"/>
+                                            </StackPanel>
+
+                                            <!-- Size -->
+                                            <TextBlock Grid.Column="4" Text="{Binding SizeText}" FontSize="11.5" Foreground="#334155" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                                            <!-- Status pill -->
+                                            <Border Grid.Column="5" Background="{Binding StatusBadgeBackground}" CornerRadius="9" Padding="6,2" MaxWidth="110" HorizontalAlignment="Left" VerticalAlignment="Center" ClipToBounds="True">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <Ellipse Width="5" Height="5" Fill="{Binding StatusBadgeForeground}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding StatusText}" Foreground="{Binding StatusBadgeForeground}" FontSize="10.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+                                            </Border>
+
+                                            <!-- Progress -->
+                                            <Panel Grid.Column="6" VerticalAlignment="Center" Margin="12,0,12,0">
+                                                <Grid ColumnDefinitions="*,36" IsVisible="{Binding HasProgress}">
+                                                    <ProgressBar Classes="row" Grid.Column="0" Value="{Binding Percent}" Minimum="0" Maximum="100" Foreground="{Binding ProgressBrush}" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding PercentText}" FontSize="10.5" FontWeight="Bold" Foreground="#334155" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                </Grid>
+                                                <TextBlock Text="—" Foreground="#94a3b8" HorizontalAlignment="Center" IsVisible="{Binding !HasProgress}"/>
+                                            </Panel>
+
+                                            <!-- Speed -->
+                                            <TextBlock Grid.Column="7" Text="{Binding SpeedText}" FontSize="11.5" FontWeight="SemiBold" Foreground="#2563eb" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                                            <!-- Time left -->
+                                            <TextBlock Grid.Column="8" Text="{Binding LeftText}" FontSize="11" Foreground="#64748b" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <!-- Empty state -->
+                            <StackPanel IsVisible="{Binding ShowEmptyState}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8" Margin="16">
+                                <Border Width="48" Height="48" CornerRadius="24" Background="#eff6ff" HorizontalAlignment="Center">
+                                    <Image Source="/Assets/logo.png" Width="26" Height="26" Opacity="0.8"/>
+                                </Border>
+                                <TextBlock Text="No recordings yet" FontSize="14" FontWeight="SemiBold" Foreground="#0f172a" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Tick branches on the left, choose a period, then press “Find recordings”."
+                                           FontSize="11.5" Foreground="#64748b" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="340"/>
+                            </StackPanel>
+
+                            <!-- Searching state -->
+                            <StackPanel IsVisible="{Binding ShowSearchingState}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                                <TextBlock Text="Searching DVR recordings…" FontSize="13.5" FontWeight="SemiBold" Foreground="#0f172a" HorizontalAlignment="Center"/>
+                                <ProgressBar IsIndeterminate="True" Width="200"/>
+                            </StackPanel>
+                        </Panel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- ================= Splitter ================= -->
+        <Border Grid.Row="3" Width="44" Height="3" CornerRadius="2" Background="#cbd5e1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+        <GridSplitter Grid.Row="3" ResizeDirection="Rows" HorizontalAlignment="Stretch" Cursor="SizeNorthSouth" ToolTip.Tip="Drag to resize the activity log"/>
+
+        <!-- ================= 4. Activity log ================= -->
+        <Border Grid.Row="4" Background="#0f172a" CornerRadius="8" Margin="10,0,10,10" ClipToBounds="True">
+            <Grid RowDefinitions="Auto,*">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="10,5,8,3">
+                    <Ellipse Grid.Column="0" Width="6" Height="6" Fill="#4ade80" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBlock Grid.Column="1" Text="Activity log" FontWeight="SemiBold" FontSize="11" Foreground="#e2e8f0" VerticalAlignment="Center"/>
+                    <Button x:Name="BtnClearLog" Grid.Column="2" Classes="appbar" Content="Clear" MinHeight="20" FontSize="10" Padding="8,0"/>
+                </Grid>
+                <ScrollViewer x:Name="ScrollLog" Grid.Row="1" Margin="10,0,6,6">
+                    <ItemsControl ItemsSource="{Binding Logs}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <SelectableTextBlock Text="{Binding}" Foreground="#cbd5e1" FontFamily="Ubuntu Mono, DejaVu Sans Mono, Cascadia Code, Consolas, monospace" FontSize="11" LineHeight="16" TextWrapping="Wrap"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

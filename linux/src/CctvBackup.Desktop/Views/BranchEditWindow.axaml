@@ -1,0 +1,72 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="CctvBackup.Desktop.Views.BranchEditWindow"
+        Title="Branch Configuration"
+        Icon="/Assets/logo.png"
+        Width="480" Height="580"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <Grid RowDefinitions="*,Auto" Margin="20">
+        <ScrollViewer Grid.Row="0">
+            <StackPanel Spacing="12">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Branch Name:" FontWeight="SemiBold"/>
+                    <TextBox x:Name="TxtName" PlaceholderText="e.g. Main Branch"/>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Area / Location:" FontWeight="SemiBold"/>
+                    <TextBox x:Name="TxtArea" PlaceholderText="e.g. Main Office"/>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Connection Type:" FontWeight="SemiBold"/>
+                    <StackPanel Orientation="Horizontal" Spacing="20" Margin="0,4,0,4">
+                        <RadioButton x:Name="RbCloud" Content="Cloud Serial ID (P2P)" IsChecked="True"/>
+                        <RadioButton x:Name="RbIp" Content="Direct IP / Port"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel x:Name="PanelCloud" Spacing="4">
+                    <TextBlock Text="Cloud Serial ID (16 hex chars):" FontWeight="SemiBold"/>
+                    <TextBox x:Name="TxtSerialId" PlaceholderText="e.g. 0123456789abcdef"/>
+                </StackPanel>
+
+                <Grid x:Name="PanelIp" ColumnDefinitions="*,100" Margin="0,0,0,0">
+                    <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,10,0">
+                        <TextBlock Text="IP Address or Domain:" FontWeight="SemiBold"/>
+                        <TextBox x:Name="TxtAddress" PlaceholderText="192.168.1.100"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Port:" FontWeight="SemiBold"/>
+                        <TextBox x:Name="TxtPort" Text="34567"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+                    <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,10,0">
+                        <TextBlock Text="DVR Username:" FontWeight="SemiBold"/>
+                        <TextBox x:Name="TxtUsername" Text="admin"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="DVR Password:" FontWeight="SemiBold"/>
+                        <TextBox x:Name="TxtPassword" PasswordChar="•" PlaceholderText="(Leave blank to keep saved)"/>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Manual Camera Count (optional):" FontWeight="SemiBold"/>
+                    <TextBox x:Name="TxtCameraCount" Text="0" PlaceholderText="0 = auto-detect upon test/connect"/>
+                    <TextBlock Text="Set to 4, 8, 16 etc. if DVR channel count auto-detect is 0." FontSize="11" Foreground="#59636e"/>
+                </StackPanel>
+
+                <TextBlock x:Name="TxtErrors" Foreground="#cf222e" TextWrapping="Wrap" Margin="0,4,0,0"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,15,0,0">
+            <Button x:Name="BtnCancel" Content="Cancel" Width="90" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <Button x:Name="BtnSave" Content="Save" Classes="primary" Width="90" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsDefault="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
