@@ -36,7 +36,7 @@ internal sealed class UpdateDialog : Form
         MaximizeBox = false;
         MinimizeBox = false;
         StartPosition = FormStartPosition.CenterParent;
-        ClientSize = new Size(460, 410);
+        ClientSize = new Size(460, 414);
         BackColor = Ui.Surface;
         Font = Ui.Font(9.5f);
         DoubleBuffered = true;
@@ -221,6 +221,12 @@ internal sealed class UpdateDialog : Form
 
         _body.Controls.AddRange(new Control[] { summaryCard, lblNotes, notesBox, _lblStatus, _progress, _btnCancel, _btnInstall });
         Shown += (_, _) => _btnInstall.Focus();
+        Load += (_, _) =>
+        {
+            int needH = _header.Bottom + _btnInstall.Bottom + Ui.S(this, 18);
+            if (ClientSize.Height != needH)
+                ClientSize = new Size(ClientSize.Width, needH);
+        };
     }
 
     private async Task StartDownloadAndInstallAsync()

@@ -17,7 +17,7 @@ internal sealed class AccountForm : Form
         MaximizeBox = false;
         MinimizeBox = false;
         StartPosition = FormStartPosition.CenterParent;
-        ClientSize = new Size(440, 530);
+        ClientSize = new Size(440, 470);
         BackColor = Color.FromArgb(248, 250, 252);
         Font = new Font("Segoe UI", 9.5f);
         DoubleBuffered = true;
@@ -237,5 +237,13 @@ internal sealed class AccountForm : Form
         body.Controls.AddRange(new Control[] {
             lblChange, lblCurr, txtCurr, lblNew, txtNew, lblConf, txtConf, lblError, btnUpdate, divider, btnLock, lblVersion, btnCheckUpdate
         });
+
+        // Recompute height after DPI auto-scaling so the bottom margin stays tight at 100%, 125%, 150%, etc.
+        Load += (_, _) =>
+        {
+            int needH = header.Bottom + btnCheckUpdate.Bottom + Ui.S(this, 18);
+            if (ClientSize.Height != needH)
+                ClientSize = new Size(ClientSize.Width, needH);
+        };
     }
 }

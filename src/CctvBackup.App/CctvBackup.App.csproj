@@ -17,7 +17,7 @@
     <!-- What Windows shows for the program: file name, icon, and "Details" in the file properties. -->
     <AssemblyName>CctvBackup</AssemblyName>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Product>CCTV Backup</Product>
     <AssemblyTitle>CCTV Backup</AssemblyTitle>
     <Description>Back up recordings from branch DVRs to an external disk</Description>
