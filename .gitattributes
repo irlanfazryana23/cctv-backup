@@ -5,5 +5,8 @@
 *.ps1 text eol=crlf
 *.iss text eol=crlf
 *.isl text eol=crlf
+*.axaml text eol=crlf
+*.sh text eol=lf
+*.desktop text eol=lf
 *.png binary
 *.ico binary

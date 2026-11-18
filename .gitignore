@@ -1,25 +1,52 @@
+# Build outputs & IDE files
 bin/
 obj/
 .vs/
+.vscode/
+.idea/
 dist/
 *.user
+*.suo
 
-# Local build/package caches and reports
+# Local build/package caches, temp test outputs and screenshots
 tools/.cache/
+tools/_*/
 tools/_*.txt
 tools/sdk-inspect/_*.txt
+shots/
+screenshots/
+_out.txt
+_pdb.txt
+*.log
+logs/
 
-# Vendor SDK and decoder binaries must be supplied locally.
+# Vendor SDK, native libraries, installers and decoder binaries (supplied locally)
 *.exe
-vendor/**/*.dll
-vendor/**/*.pdb
-
-# Never commit vendor binaries, CMS data or credentials
+*.dll
+*.pdb
+*.so
+*.so.*
+*.deb
+*.AppImage
+*.tar.gz
+*.zip
+/vendor/
 /sdk/
+/linux/sdk/
+
+# Runtime user data, credentials, auth state and CCTV recordings (never commit)
 **/Data.xml
 **/ConfigModule.ini
 **/User.ini
 branches.json
 settings.json
-_out.txt
-_pdb.txt
+auth.json
+credentials.dat
+.key
+*.h264
+*.mp4
+*.avi
+
+# Private local tools and production secret overrides (never commit)
+/private/
+*.local.cs
